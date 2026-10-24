@@ -152,9 +152,10 @@ class WebPipe:
 
     async def close(self) -> None:
         """Close the socket."""
-        if self._reader is not None:
-            self._reader.cancel()
-            self._reader = None
+        reader, self._reader = self._reader, None
+        if reader is not None and reader is not asyncio.current_task():
+            reader.cancel()
+            await asyncio.gather(reader, return_exceptions=True)
         if self._ws is not None:
             await self._ws.close()
             self._ws = None
@@ -250,7 +251,8 @@ class WebPipe:
     def _apply_updates(self, updates: list[dict[str, Any]]) -> None:
         changed: set[str] = set()
         for update in updates:
-            obj = self.objects.get(update.get("object"))
+            object_id = update.get("object")
+            obj = self.objects.get(object_id) if isinstance(object_id, str) else None
             if obj is None:
                 continue
             names = {index: name for name, index in obj.prop_index.items()}

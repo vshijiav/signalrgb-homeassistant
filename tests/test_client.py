@@ -49,7 +49,7 @@ async def test_connect_reads_state(client):
     assert client.effect_attributes()["effect_name"] == "Aurora"
 
 
-async def test_connect_failure_raises():
+async def test_connect_failure_raises(allow_localhost_sockets):
     """An unreachable WebPipe raises WebPipeError."""
     async with aiohttp.ClientSession() as session:
         client = SignalRGBClient(session, "127.0.0.1", 1)

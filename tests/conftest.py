@@ -240,7 +240,20 @@ class FakeSignalRGB:
 
 
 @pytest.fixture
-async def fake_signalrgb() -> AsyncIterator[tuple[FakeSignalRGB, TestServer]]:
+def allow_localhost_sockets(request: pytest.FixtureRequest) -> None:
+    """Let the fake WebPipe use localhost sockets.
+
+    pytest-homeassistant-custom-component (installed in CI) blocks sockets through
+    pytest-socket; without that plugin there is nothing to unblock.
+    """
+    if request.config.pluginmanager.hasplugin("socket"):
+        request.getfixturevalue("socket_enabled")
+
+
+@pytest.fixture
+async def fake_signalrgb(
+    allow_localhost_sockets: None,
+) -> AsyncIterator[tuple[FakeSignalRGB, TestServer]]:
     """Run a fake WebPipe on a random localhost port."""
     fake = FakeSignalRGB()
     app = web.Application()

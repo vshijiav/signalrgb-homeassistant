@@ -65,9 +65,10 @@ class SignalRGBClient:
         self._closing = True
         if self._params_debounce is not None:
             self._params_debounce.cancel()
-        for task in (self._reconnect_task, self._params_task):
-            if task is not None:
-                task.cancel()
+        tasks = [task for task in (self._reconnect_task, self._params_task) if task is not None]
+        for task in tasks:
+            task.cancel()
+        await asyncio.gather(*tasks, return_exceptions=True)
         if self._pipe is not None:
             await self._pipe.close()
 
@@ -95,8 +96,15 @@ class SignalRGBClient:
         if self._params_debounce is not None:
             self._params_debounce.cancel()
         self._params_debounce = asyncio.get_running_loop().call_later(
-            0.3, lambda: asyncio.create_task(self._refresh_params())
+            0.3, self._start_params_refresh
         )
+
+    def _start_params_refresh(self) -> None:
+        if self._params_task is not None and not self._params_task.done():
+            # A fetch is in flight and may have read the old objects; try again shortly
+            self._handle_params_changed([])
+            return
+        self._params_task = asyncio.create_task(self._refresh_params())
 
     async def _refresh_params(self) -> None:
         active = self.active_effect
