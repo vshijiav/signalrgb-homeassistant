@@ -62,9 +62,19 @@ Register-ScheduledTask -TaskName 'SignalRGB WebPipe relay' -Action $action -Trig
 
 ### 2. 安装集成
 
-把 `custom_components/signalrgb/` 复制到 Home Assistant 的 `config/custom_components/` 目录下，然后重启 Home Assistant。
+#### 用 HACS 安装（推荐）
 
-> 如果之前通过 HACS 装过原版，这一步会覆盖它。之后 HACS 再提示 *SignalRGB* 有更新时不要接受，否则会被换回只支持 Pro 的原版。
+1. **HACS → 右上角 ⋮ → 自定义存储库（Custom repositories）**
+2. 存储库填 `https://github.com/vshijiav/signalrgb-homeassistant`，类型选 **Integration**，点 **添加**
+3. 在 HACS 里打开 **SignalRGB (WebPipe edition)**，点 **下载**，然后重启 Home Assistant。
+
+之后 HACS 会跟着这个仓库的 Release 走，更新来自本版，不会再被原版覆盖。
+
+> **之前通过 HACS 装过原版？** 两者用的是同一个 `signalrgb` 域名，要先让 HACS 不再跟踪原版。如果想保留已有的集成配置，不要在 HACS 里对原版点 *删除*，那会把 `custom_components/signalrgb` 整个目录删掉。直接下载本版覆盖上去就行；之后 HACS 对原版条目提示的更新一律忽略。
+
+#### 手动安装
+
+把 `custom_components/signalrgb/` 复制到 Home Assistant 的 `config/custom_components/` 目录下，然后重启 Home Assistant。
 
 ### 3. 在 Home Assistant 里添加
 

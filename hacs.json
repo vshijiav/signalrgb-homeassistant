@@ -1,5 +1,5 @@
 {
-  "name": "SignalRGB Integration",
-  "country": "US",
-  "homeassistant": "2026.4.0"
+  "name": "SignalRGB (WebPipe edition)",
+  "homeassistant": "2026.4.0",
+  "render_readme": true
 }

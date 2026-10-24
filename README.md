@@ -79,11 +79,24 @@ Give the PC a fixed IP (a DHCP reservation) so Home Assistant can always find it
 
 ### 2. Install the integration
 
+#### With HACS (recommended)
+
+1. **HACS → ⋮ (top right) → Custom repositories**
+2. Repository: `https://github.com/vshijiav/signalrgb-homeassistant`, type: **Integration** → **Add**
+3. Open **SignalRGB (WebPipe edition)** in HACS → **Download**, then restart Home Assistant.
+
+HACS then follows this repository's releases, so updates come from this version and not from
+upstream.
+
+> **Already have the upstream integration from HACS?** Both use the `signalrgb` domain, so
+> stop HACS tracking the upstream one first. Don't use HACS's *Remove* on it if you want to
+> keep your config entry: removing deletes `custom_components/signalrgb`. Downloading this
+> version over it is enough; afterwards ignore any update HACS offers for the upstream entry.
+
+#### Manually
+
 Copy `custom_components/signalrgb/` into your Home Assistant `config/custom_components/`
 directory and restart Home Assistant.
-
-> If you had the upstream integration installed through HACS, this replaces it. Don't accept
-> a HACS update for *SignalRGB* afterwards: it would restore the Pro-only upstream version.
 
 ### 3. Add it in Home Assistant
 
