@@ -5,6 +5,34 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - 2026-10-23 — WebPipe edition
+
+Forked from upstream 1.1.0. Works with the free SignalRGB plan.
+
+### Changed
+
+- **Transport**: replaced the `signalrgb` HTTP API client (Pro only) with a QWebChannel
+  client for SignalRGB's local WebPipe channel (`webpipe.py`, `client.py`). State is pushed;
+  nothing polls.
+- **Power and brightness** act on every lighting endpoint's own brightness; turning off
+  remembers each device's level (stored with HA's `Store`) and turning on restores it.
+- Default port is now `16046`, the port of the bundled relay.
+- `iot_class` is `local_push`; the `signalrgb` requirement is gone.
+
+### Added
+
+- `select` for the running effect.
+- One entity per parameter of the running effect (`number`, `switch`, `select`, `text`),
+  hidden automatically while the running effect doesn't have that parameter.
+- Effect rotation `switch` and interval `number`.
+- `windows/webpipe_relay.py`: forwards the localhost-only WebPipe to the LAN for allowed IPs.
+- `windows/srgb.cmd`: command-line on/off/toggle/status/effect.
+- Chinese README.
+
+### Removed
+
+- Tests for the HTTP API client, replaced by tests against a fake QWebChannel server.
+
 ## [Unreleased]
 
 ### Added

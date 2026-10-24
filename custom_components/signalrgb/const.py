@@ -8,12 +8,9 @@ DOMAIN = "signalrgb"
 
 LOGGER = getLogger(__package__)
 
-# Configuration constants
-DEFAULT_PORT = 16038
+# Port of the LAN relay in front of SignalRGB's localhost-only WebPipe (16036)
+DEFAULT_PORT = 16046
 DEFAULT_NAME = "SignalRGB"
-
-# Update interval for data coordinator (in seconds)
-UPDATE_INTERVAL = 300
 
 # Device info
 MANUFACTURER = "WhirlwindFX"
@@ -23,4 +20,11 @@ MODEL = "SignalRGB"
 ICON = "mdi:led-strip-variant"
 
 # Platforms
-PLATFORMS = [Platform.LIGHT, Platform.SELECT, Platform.BUTTON]
+PLATFORMS = [
+    Platform.LIGHT,
+    Platform.SELECT,
+    Platform.BUTTON,
+    Platform.NUMBER,
+    Platform.SWITCH,
+    Platform.TEXT,
+]

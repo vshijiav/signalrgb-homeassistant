@@ -13,7 +13,8 @@
                     "host": "Host",
                     "port": "Port"
                 },
-                "title": "Setup SignalRGB"
+                "title": "Setup SignalRGB",
+                "description": "Host and port of the WebPipe relay (webpipe_relay.py) running on the SignalRGB PC. SignalRGB itself only listens on localhost:16036."
             }
         }
     }

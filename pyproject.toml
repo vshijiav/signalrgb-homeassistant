@@ -1,7 +1,7 @@
 [project]
 name = "signalrgb-homeassistant"
-version = "1.1.0"
-description = "Home Assistant integration for SignalRGB"
+version = "2.1.2"
+description = "Home Assistant integration for SignalRGB over its local WebPipe channel (no Pro needed)"
 authors = [{ name = "Stefanie Jane", email = "stef@hyperbliss.tech" }]
 license = { text = "Apache-2.0" }
 readme = "README.md"
@@ -18,7 +18,6 @@ classifiers = [
 # Dependencies
 dependencies = [
     "homeassistant>=2026.4.0",
-    "signalrgb>=1.0.2",
     "colorama>=0.4.6",
 ]
 
@@ -37,9 +36,9 @@ dev = [
 ]
 
 [project.urls]
-homepage = "https://github.com/hyperb1iss/signalrgb-homeassistant"
-repository = "https://github.com/hyperb1iss/signalrgb-homeassistant"
-documentation = "https://github.com/hyperb1iss/signalrgb-homeassistant"
+homepage = "https://github.com/vshijiav/signalrgb-homeassistant"
+repository = "https://github.com/vshijiav/signalrgb-homeassistant"
+documentation = "https://github.com/vshijiav/signalrgb-homeassistant"
 
 [build-system]
 requires = ["hatchling"]

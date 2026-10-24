@@ -1,318 +1,172 @@
-<div align="center">
+# SignalRGB for Home Assistant — WebPipe edition
 
-# 🌌 SignalRGB Home Assistant Integration
+**English** | [简体中文](README.zh-CN.md)
 
-<p>
-  <a href="https://github.com/hyperb1iss/signalrgb-homeassistant/actions/workflows/ci.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/hyperb1iss/signalrgb-homeassistant/ci.yml?branch=main&style=for-the-badge&logo=github&logoColor=white&label=CI" alt="CI Status">
-  </a>
-  <a href="https://github.com/hyperb1iss/signalrgb-homeassistant/releases">
-    <img src="https://img.shields.io/github/v/release/hyperb1iss/signalrgb-homeassistant?style=for-the-badge&logo=github&logoColor=white" alt="Latest Release">
-  </a>
-  <a href="https://github.com/hyperb1iss/signalrgb-homeassistant/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/hyperb1iss/signalrgb-homeassistant?style=for-the-badge&logo=apache&logoColor=white" alt="License">
-  </a>
-</p>
+Control [SignalRGB](https://signalrgb.com) from Home Assistant **without a SignalRGB Pro
+subscription**.
 
-<p>
-  <a href="https://github.com/hacs/integration">
-    <img src="https://img.shields.io/badge/HACS-Default-41BDF5?style=for-the-badge&logo=homeassistant&logoColor=white" alt="HACS Default">
-  </a>
-  <a href="https://www.home-assistant.io">
-    <img src="https://img.shields.io/badge/Home%20Assistant-2026.4+-41BDF5?style=for-the-badge&logo=homeassistant&logoColor=white" alt="Home Assistant 2026.4+">
-  </a>
-  <a href="https://www.python.org/downloads/">
-    <img src="https://img.shields.io/badge/Python-3.14+-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python 3.14+">
-  </a>
-</p>
+This is a modified version of
+[hyperb1iss/signalrgb-homeassistant](https://github.com/hyperb1iss/signalrgb-homeassistant).
+The original talks to SignalRGB's HTTP API (port 16038), which only answers Pro users. This
+version talks to the local channel the SignalRGB desktop UI itself uses, so everything the
+free app can do from its own window can be done from Home Assistant.
 
-<strong>Transform your smart home lighting with the power of SignalRGB, integrated directly into Home Assistant.</strong>
+## What's different from upstream
 
-<a href="#-features">Features</a> •
-<a href="#-requirements">Requirements</a> •
-<a href="#-installation">Installation</a> •
-<a href="#%EF%B8%8F-configuration">Configuration</a> •
-<a href="#-usage">Usage</a> •
-<a href="#-development">Development</a> •
-<a href="#-contributing">Contributing</a>
+| | Upstream 1.x | This version (2.x) |
+| --- | --- | --- |
+| SignalRGB plan | Pro required | Free works |
+| Transport | HTTP API on `:16038` | WebPipe QWebChannel on `127.0.0.1:16036`, via a small relay |
+| Updates | Polling every 5 minutes | Pushed instantly (`local_push`) |
+| Power / brightness | Global canvas toggle (Pro API) | Per-device brightness on every device and component |
+| Current effect | Light attribute only | Effect select, plus one entity per effect parameter |
+| Extra | — | Effect rotation switch and interval, Windows `srgb` CLI |
 
-</div>
+## How it works
 
----
-
-## 🔮 Features
-
-- 🌐 Control SignalRGB as a light entity in Home Assistant
-- 💡 Seamless on/off control with brightness adjustment
-- 🎭 Apply lighting effects from SignalRGB's full effect library
-- 🧬 Automatic effect image and color extraction
-- 🧩 Select and apply per-effect presets
-- 📐 Change device layouts with the layout selector
-- 🪄 Navigate effects with next / previous / random buttons
-- ⚡ Single-shot state polling (one API call per coordinator cycle)
-
-Want more features? Vote for this [SignalRGB feature request](https://forum.signalrgb.com/t/rest-api-features/2635)!
-
-## 📡 Requirements
-
-- **Home Assistant** 2026.4.0 or newer
-- **Python** 3.14.2 or newer (matches Home Assistant's floor)
-- **SignalRGB** installed and running on a Windows PC reachable from your HA instance
-- **SignalRGB HTTP API** enabled (default port: `16038`)
-- **SignalRGB [Pro subscription](https://signalrgb.com/pricing/)** — the HTTP API requires Pro
-
-## 💎 Installation
-
-### HACS (Recommended)
-
-This integration is in the [HACS](https://hacs.xyz/) default repository:
-
-1. Open **HACS** in Home Assistant
-2. Go to **Integrations** and click the **+** button
-3. Search for **SignalRGB** and select it
-4. Click **Download** and restart Home Assistant
-
-### Manual Installation
-
-1. Download the latest release from the [releases page](https://github.com/hyperb1iss/signalrgb-homeassistant/releases)
-2. Copy the `custom_components/signalrgb/` folder into your Home Assistant `custom_components/` directory
-3. Restart Home Assistant
-
-### Enable the SignalRGB HTTP API
-
-1. Open SignalRGB on your Windows PC
-2. Go to **Settings → General → Enable HTTP API**
-3. Note the port number (default: `16038`)
-4. If needed, allow incoming connections on that port in Windows Firewall
-
-## ⚙️ Configuration
-
-After installation, add the integration from the Home Assistant UI:
-
-1. Navigate to **Settings → Devices & Services**
-2. Click **Add Integration** and search for **SignalRGB**
-3. Enter the hostname or IP address of the PC running SignalRGB and the port number
-4. Click **Submit**
-
-## 🎭 Usage
-
-Once configured, SignalRGB exposes several entities:
-
-- 💡 **Light Entity** — power, brightness, and effect selection
-- 📐 **Layout Selector** — switch between SignalRGB device layouts
-- 🧩 **Effect Preset Selector** — apply presets for the current effect
-- 🪄 **Button Entities** — navigate effects (next, previous, random)
-
-### 💡 Light Entity
-
-The main light entity lets you turn SignalRGB on/off, select effects, and adjust brightness — all from automations, scripts, and scenes.
-
-```yaml
-automation:
-  - alias: "Gaming Time"
-    trigger:
-      platform: state
-      entity_id: binary_sensor.gaming_pc_status
-      to: "on"
-    action:
-      - service: light.turn_on
-        target:
-          entity_id: light.signalrgb
-        data:
-          effect: "Cyberpunk 2077"
-          brightness: 255
+```
+Home Assistant ──WebSocket──▶ webpipe_relay.py on the PC (:16046) ──▶ SignalRGB WebPipe (127.0.0.1:16036)
 ```
 
-### 📐 Layout Selector
+The SignalRGB desktop app publishes its core objects (lighting, devices, layouts, ...) over a
+[QWebChannel](https://doc.qt.io/qt-6/qtwebchannel-javascript.html) WebSocket named
+**WebPipe**. Its own UI drives the app through it, with no Pro check. WebPipe only listens on
+localhost, so `windows/webpipe_relay.py` forwards it to your LAN and accepts only the IPs you
+allow.
 
-Switch between SignalRGB device layouts:
+- **Effects**: `lighting.setAlwaysEffect(name)`, the same call the app's UI makes. Next,
+  previous and random map to `goForward()`, `goBackward()` and `goCrazy()`.
+- **Power and brightness**: every lighting endpoint (each device and each component on a
+  controller channel) has a writable `Brightness`. *Off* sets all of them to 0 and remembers
+  each one's level; *on* restores those levels. The running effect never changes.
+- **Effect parameters**: the running effect's parameter model is read with `itemList()`, and
+  each parameter's `value` is written directly. SignalRGB rebuilds these objects while an
+  effect loads, so the integration subscribes to the model's change signals and re-reads it.
 
-```yaml
-service: select.select_option
-target:
-  entity_id: select.signalrgb_layout
-data:
-  option: "My Gaming Setup"
+## Requirements
+
+- SignalRGB on Windows (free plan is fine). Tested with **2.5.82**.
+- Python 3.11+ on the same PC, for the relay. Only the standard library is used.
+- Home Assistant **2026.4** or newer. Tested with **2026.9.4**.
+
+## Installation
+
+### 1. Run the relay on the SignalRGB PC
+
+Copy [`windows/webpipe_relay.py`](windows/webpipe_relay.py) to the PC and start it, allowing
+your Home Assistant host's IP:
+
+```powershell
+python webpipe_relay.py --allow 192.168.1.10
 ```
 
-Automation example — switch layout in the evening:
+- `--allow` is required and can be repeated. Connections from any other IP are refused.
+- `--port` changes the LAN port (default `16046`).
+- The relay logs to `webpipe_relay.log` next to the script.
+- Allow inbound TCP on the port in Windows Firewall if Windows asks, or if Home Assistant
+  can't connect.
 
-```yaml
-automation:
-  - alias: "Evening Gaming Setup"
-    trigger:
-      platform: time
-      at: "20:00:00"
-    action:
-      - service: select.select_option
-        target:
-          entity_id: select.signalrgb_layout
-        data:
-          option: "Gaming Setup"
-      - service: light.turn_on
-        target:
-          entity_id: light.signalrgb
-        data:
-          effect: "Ambient Waves"
-          brightness: 200
+To start it in the background at every logon, register a scheduled task (run once, in
+PowerShell; adjust the paths and IP):
+
+```powershell
+$py = (Get-Command pythonw).Source
+$action = New-ScheduledTaskAction -Execute $py -Argument '"C:\path\to\webpipe_relay.py" --allow 192.168.1.10'
+Register-ScheduledTask -TaskName 'SignalRGB WebPipe relay' -Action $action -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME)
 ```
 
-### 🧩 Effect Preset Selector
+Give the PC a fixed IP (a DHCP reservation) so Home Assistant can always find it.
 
-Apply presets for the current effect:
+### 2. Install the integration
 
-```yaml
-service: select.select_option
-target:
-  entity_id: select.signalrgb_effect_preset
-data:
-  option: "Rainbow"
+Copy `custom_components/signalrgb/` into your Home Assistant `config/custom_components/`
+directory and restart Home Assistant.
+
+> If you had the upstream integration installed through HACS, this replaces it. Don't accept
+> a HACS update for *SignalRGB* afterwards: it would restore the Pro-only upstream version.
+
+### 3. Add it in Home Assistant
+
+**Settings → Devices & Services → Add Integration → SignalRGB**, then enter the PC's IP and
+the relay port (`16046`).
+
+## Entities
+
+| Entity | What it does |
+| --- | --- |
+| `light.signalrgb_*` | On/off and brightness for all devices; the effect list is every installed effect |
+| `select.*_effect` | The running effect; pick another to switch |
+| `select.*_layout` | Saved SignalRGB layouts |
+| `select.*_effect_preset` | Saved presets of the running effect (unavailable when it has none) |
+| `button.*_next_effect` / `_previous_effect` / `_random_effect` | Navigate effects |
+| `switch.*_effect_rotation` | Rotate effects on SignalRGB's timer |
+| `number.*_effect_rotation_interval` | Seconds between rotations (minimum 10) |
+| Effect parameters | One entity per parameter of the running effect (see below) |
+
+**Effect parameters** follow the running effect. Each parameter becomes an entity the first
+time an effect that has it runs:
+
+| SignalRGB parameter | Entity |
+| --- | --- |
+| Slider / hue | `number` (slider, with the effect's min, max and step) |
+| On/off | `switch` |
+| Drop-down | `select` |
+| Color | `text` (`#rrggbb`) |
+
+Parameters that the running effect doesn't have are hidden automatically and shown again
+when an effect that uses them runs. Entities you hide yourself are left alone.
+
+## Windows command-line tool
+
+[`windows/srgb.cmd`](windows/srgb.cmd) controls SignalRGB from a terminal or a scheduled
+task, using the same WebPipe channel:
+
+```powershell
+srgb status          # on (Aurora)
+srgb off             # remember the effect, switch to the off effect
+srgb on              # restore the remembered effect
+srgb toggle
+srgb effect "Aurora"
 ```
 
-Movie-night script example:
+- `off` switches to an installed "lights off" effect. The default is `AA关灯`; pass
+  `-OffEffect "Good Night!"` (or any other effect) to use a different one.
+- `status` reads the current effect through SignalRGB's built-in MCP server, so keep
+  **Settings → Application → AI Integration → Model Context Protocol** enabled.
+- State (the remembered effect) is kept in `state.json` next to the script.
 
-```yaml
-script:
-  movie_night:
-    alias: "Movie Night Lighting"
-    sequence:
-      - service: light.turn_on
-        target:
-          entity_id: light.signalrgb
-        data:
-          effect: "Audio Visualizer"
-      - delay: 00:00:02
-      - service: select.select_option
-        target:
-          entity_id: select.signalrgb_effect_preset
-        data:
-          option: "Subtle Pulse"
-      - service: light.turn_on
-        target:
-          entity_id: light.signalrgb
-        data:
-          brightness: 128
-```
+## Security
 
-### 🪄 Effect Navigation Buttons
+WebPipe exposes the whole app, including your signed-in SignalRGB account details. The relay
+only forwards connections from the IPs you pass with `--allow`. Never forward the relay port
+to the internet.
 
-```yaml
-# Next effect
-service: button.press
-target:
-  entity_id: button.signalrgb_next_effect
-```
+## Limitations
 
-```yaml
-# Random effect
-service: button.press
-target:
-  entity_id: button.signalrgb_random_effect
-```
+- WebPipe is SignalRGB's internal UI channel, not a public API. A SignalRGB update can rename
+  or change the objects this integration uses.
+- "Off" dims every device to 0 rather than disabling SignalRGB's canvas; the effect keeps
+  running at zero brightness.
+- The relay has to be running on the PC. Home Assistant reconnects automatically when it or
+  SignalRGB comes back.
 
-Cycle effects every hour while the light is on:
-
-```yaml
-automation:
-  - alias: "Hourly Effect Change"
-    trigger:
-      platform: time_pattern
-      hours: "*"
-    condition:
-      - condition: state
-        entity_id: light.signalrgb
-        state: "on"
-    action:
-      - service: button.press
-        target:
-          entity_id: button.signalrgb_next_effect
-```
-
-Dashboard button card:
-
-```yaml
-type: button
-name: Next Effect
-icon: mdi:skip-next
-tap_action:
-  action: call-service
-  service: button.press
-  target:
-    entity_id: button.signalrgb_next_effect
-```
-
-## 🪄 Enhance Your UI with hyper-light-card
-
-Take your SignalRGB control to the next level with [hyper-light-card](https://github.com/hyperb1iss/hyper-light-card) — a custom Lovelace card featuring:
-
-- 🌈 Dynamic color adaptation based on the current effect
-- 📊 Detailed effect information display
-- 🖼️ Effect preview images
-- 🎛️ Easy effect switching and parameter control
-
-Install via HACS as a custom repository in the **Frontend** category.
-
-## 🧪 Development
-
-This project uses the **[Astral](https://astral.sh)** stack — [uv](https://docs.astral.sh/uv/) for packaging, [ruff](https://docs.astral.sh/ruff/) for linting and formatting, and [ty](https://docs.astral.sh/ty/) for type checking.
+## Development
 
 ```bash
-# Install uv (one-time)
-curl --proto '=https' --tlsv1.2 -sSf https://astral.sh/uv/install.sh | sh
-
-# Clone and set up
-git clone https://github.com/hyperb1iss/signalrgb-homeassistant.git
-cd signalrgb-homeassistant
 uv sync
-
-# Install pre-commit hooks
-uv run pre-commit install
+uv run pytest
+uv run ruff check custom_components tests
 ```
 
-### Common Commands
+The tests run the client against a fake QWebChannel server, so SignalRGB isn't needed.
 
-| Command | What it does |
-|---|---|
-| `make test` | Run the test suite |
-| `make coverage` | Tests with coverage (HTML report in `htmlcov/`) |
-| `make lint` | `ruff check` + `ruff format --check` |
-| `make typecheck` | `ty check` |
-| `make check` | lint → typecheck → test (the full gauntlet) |
-| `make format` | Format with ruff |
-| `make fix` | Auto-fix lint issues + format |
+## Credits and license
 
-All commands run through `uv run` — no virtualenv activation needed.
+Based on [hyperb1iss/signalrgb-homeassistant](https://github.com/hyperb1iss/signalrgb-homeassistant)
+by Stefanie Jane, licensed under Apache 2.0. The WebPipe transport, new entities and Windows
+tools were added in this version; see [NOTICE](NOTICE) and [CHANGELOG](CHANGELOG.md).
 
-## 🦋 Contributing
+Apache License 2.0, see [LICENSE](LICENSE).
 
-Contributions are welcome!
-
-1. Fork the repository
-2. Create a branch: `git checkout -b your-feature-name`
-3. Make your changes, commit using [Gitmoji](https://gitmoji.dev/) conventions
-4. Run `make check` to verify lint, types, and tests all pass
-5. Open a pull request
-
-## 🐛 Support
-
-- 📚 [Documentation & Wiki](https://github.com/hyperb1iss/signalrgb-homeassistant/wiki)
-- 🐛 [Report a bug](https://github.com/hyperb1iss/signalrgb-homeassistant/issues/new?assignees=&labels=bug&template=bug_report.md&title=)
-- 💎 [Request a feature](https://github.com/hyperb1iss/signalrgb-homeassistant/issues/new?assignees=&labels=enhancement&template=feature_request.md&title=)
-
-## 📄 License
-
-Apache License 2.0 — see [LICENSE](LICENSE) for details.
-
-## ⚠️ Disclaimer
-
-This integration is not officially affiliated with or endorsed by WhirlwindFX or SignalRGB. Use at your own risk.
-
----
-
-<div align="center">
-
-Created by [Stefanie Jane 🌠](https://github.com/hyperb1iss)
-
-If you find this project useful, [buy me a Monster Ultra Violet](https://ko-fi.com/hyperb1iss) 💜
-
-</div>
+Not affiliated with WhirlwindFX or SignalRGB. It only uses features the free SignalRGB app
+offers in its own window.

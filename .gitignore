@@ -163,3 +163,7 @@ cython_debug/
 
 # Poetry lock file
 poetry.lock
+
+# Windows helper runtime files
+windows/state.json
+windows/*.log

@@ -6,16 +6,12 @@ from typing import Any
 
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 from homeassistant.const import CONF_HOST, CONF_PORT
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import voluptuous as vol
 
-from signalrgb import (
-    ConnectionError as SignalRGBConnectionError,
-    SignalRGBException,
-)
-
-from . import _create_client
+from .client import SignalRGBClient
 from .const import DEFAULT_PORT, DOMAIN, LOGGER
+from .webpipe import WebPipeError
 
 DATA_SCHEMA = vol.Schema(
     {
@@ -37,31 +33,15 @@ class SignalRGBConfigFlow(ConfigFlow, domain=DOMAIN):
         if user_input is None:
             return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA, errors=errors)
 
+        client = SignalRGBClient(
+            async_get_clientsession(self.hass), user_input[CONF_HOST], user_input[CONF_PORT]
+        )
         try:
-            # Initialize client in a thread executor to avoid blocking SSL certificate loading
-            client = await self.hass.async_add_executor_job(
-                _create_client, user_input[CONF_HOST], user_input[CONF_PORT]
-            )
-
-            LOGGER.debug(
-                "Testing connection to SignalRGB at %s:%s",
-                user_input[CONF_HOST],
-                user_input[CONF_PORT],
-            )
-            # Test the connection by getting the current effect
-            await client.get_current_effect()
-            await client.aclose()
-            LOGGER.debug("Successfully connected to SignalRGB")
-        except SignalRGBConnectionError:
-            LOGGER.error(
-                "Failed to connect to SignalRGB at %s:%s",
-                user_input[CONF_HOST],
-                user_input[CONF_PORT],
-            )
+            LOGGER.debug("Testing connection to SignalRGB WebPipe at %s", client.url)
+            await client.connect()
+        except WebPipeError as err:
+            LOGGER.error("Failed to connect to SignalRGB WebPipe at %s: %s", client.url, err)
             errors["base"] = "cannot_connect"
-        except SignalRGBException as err:
-            LOGGER.error("SignalRGB API error: %s", err)
-            errors["base"] = "unknown"
         except Exception as err:  # pylint: disable=broad-except # noqa: BLE001
             LOGGER.exception("Unexpected error while setting up SignalRGB: %s", err)
             errors["base"] = "unknown"
@@ -69,17 +49,7 @@ class SignalRGBConfigFlow(ConfigFlow, domain=DOMAIN):
             await self.async_set_unique_id(f"{user_input[CONF_HOST]}:{user_input[CONF_PORT]}")
             self._abort_if_unique_id_configured()
             return self.async_create_entry(title=user_input[CONF_HOST], data=user_input)
+        finally:
+            await client.close()
 
         return self.async_show_form(step_id="user", data_schema=DATA_SCHEMA, errors=errors)
-
-
-class CannotConnectError(HomeAssistantError):
-    """Error to indicate we cannot connect."""
-
-
-class InvalidAuthError(HomeAssistantError):
-    """Error to indicate there is invalid auth."""
-
-
-class InvalidHostError(HomeAssistantError):
-    """Error to indicate there is an invalid host."""

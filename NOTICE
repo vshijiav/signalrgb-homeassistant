@@ -1,0 +1,13 @@
+SignalRGB for Home Assistant — WebPipe edition
+
+This product is a modified version of signalrgb-homeassistant
+(https://github.com/hyperb1iss/signalrgb-homeassistant),
+Copyright Stefanie Jane, licensed under the Apache License, Version 2.0.
+
+Modifications (2026, vshijiav):
+- Replaced the SignalRGB HTTP API client with a QWebChannel client for
+  SignalRGB's local WebPipe channel (webpipe.py, client.py).
+- Rewrote the light, select and button platforms for push updates; added
+  number, switch and text platforms for effect parameters and effect rotation.
+- Added Windows tools: webpipe_relay.py and the srgb command-line tool.
+- Replaced the test suite.

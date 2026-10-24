@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.14.2"
 
 [[package]]
@@ -186,15 +186,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/40/00/e437a179ab78ed24780ded10bbb5d7e10832c07f62eab1d44ee2f335c95c/aiozoneinfo-0.2.3.tar.gz", hash = "sha256:987ce2a7d5141f3f4c2e9d50606310d0bf60d688ad9f087aa7267433ba85fff3", size = 8381, upload-time = "2025-02-04T19:32:06.489Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/24/a4/99e13bb4006999de2a4d63cee7497c3eb7f616b0aefc660c4c316179af3a/aiozoneinfo-0.2.3-py3-none-any.whl", hash = "sha256:5423f0354c9eed982e3f1c35edeeef1458d4cc6a10f106616891a089a8455661", size = 8009, upload-time = "2025-02-04T19:32:04.74Z" },
-]
-
-[[package]]
-name = "annotated-doc"
-version = "0.0.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/57/ba/046ceea27344560984e26a590f90bc7f4a75b06701f653222458922b558c/annotated_doc-0.0.4.tar.gz", hash = "sha256:fbcda96e87e9c92ad167c2e53839e57503ecfda18804ea28102353485033faa4", size = 7288, upload-time = "2025-11-10T22:07:42.062Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/1e/d3/26bf1008eb3d2daa8ef4cacc7f3bfdc11818d111f7e2d0201bc6e3b49d45/annotated_doc-0.0.4-py3-none-any.whl", hash = "sha256:571ac1dc6991c450b25a9c2d84a3705e2ae7a53467b5d111c24fa8baabbed320", size = 5303, upload-time = "2025-11-10T22:07:40.673Z" },
 ]
 
 [[package]]
@@ -628,18 +619,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/d3/c7/3c521d6779ee433d9596eb3fcded79549bbe371843f25e62006c04f74dc9/ciso8601-2.3.3-cp314-cp314-musllinux_1_2_aarch64.whl", hash = "sha256:aa9df2f84ab25454f14df92b2dd4f9aae03dbfa581565a716b3e89b8e2110c03", size = 41313, upload-time = "2025-08-20T16:31:01.313Z" },
     { url = "https://files.pythonhosted.org/packages/f9/93/efd40db0d6b512be1cbe4e7e750882c2e88f580e17f35b3e9cc9c23004b5/ciso8601-2.3.3-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:32e06a35eb251cfc4bbe01a858c598da0a160e4ad7f42ff52477157ceaf48061", size = 41443, upload-time = "2025-08-20T16:31:02.357Z" },
     { url = "https://files.pythonhosted.org/packages/21/8e/515f9404faa39af8df5e2b899cafbca5dbe7cd2ffe5cc124ef393ffdaf1c/ciso8601-2.3.3-cp314-cp314-win_amd64.whl", hash = "sha256:7657ba9730dc1340d73b9e61eca14f341c41dd308128c808b8b084d2b85bc03e", size = 17977, upload-time = "2025-08-20T16:31:03.429Z" },
-]
-
-[[package]]
-name = "click"
-version = "8.3.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "colorama", marker = "sys_platform == 'win32'" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/57/75/31212c6bf2503fdf920d87fee5d7a86a2e3bcf444984126f13d8e4016804/click-8.3.2.tar.gz", hash = "sha256:14162b8b3b3550a7d479eafa77dfd3c38d9dc8951f6f69c78913a8f9a7540fd5", size = 302856, upload-time = "2026-04-03T19:14:45.118Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e4/20/71885d8b97d4f3dde17b1fdb92dbd4908b00541c5a3379787137285f602e/click-8.3.2-py3-none-any.whl", hash = "sha256:1924d2c27c5653561cd2cae4548d1406039cb79b858b747cfea24924bbc1616d", size = 108379, upload-time = "2026-04-03T19:14:43.505Z" },
 ]
 
 [[package]]
@@ -1164,18 +1143,6 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/96/e3/42c87871920602a3c8300915bd0292f76eccc66c38f782397acbf8a62088/lru-dict-1.3.0.tar.gz", hash = "sha256:54fd1966d6bd1fcde781596cb86068214edeebff1db13a2cea11079e3fd07b6b", size = 13123, upload-time = "2023-11-06T01:40:12.951Z" }
 
 [[package]]
-name = "markdown-it-py"
-version = "4.0.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "mdurl" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/5b/f5/4ec618ed16cc4f8fb3b701563655a69816155e79e24a17b651541804721d/markdown_it_py-4.0.0.tar.gz", hash = "sha256:cb0a2b4aa34f932c007117b194e945bd74e0ec24133ceb5bac59009cda1cb9f3", size = 73070, upload-time = "2025-08-11T12:57:52.854Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/94/54/e7d793b573f298e1c9013b8c4dade17d481164aa517d1d7148619c2cedbf/markdown_it_py-4.0.0-py3-none-any.whl", hash = "sha256:87327c59b172c5011896038353a81343b6754500a08cd7a4973bb48c6d578147", size = 87321, upload-time = "2025-08-11T12:57:51.923Z" },
-]
-
-[[package]]
 name = "markupsafe"
 version = "3.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1215,15 +1182,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/64/3d/0f1bf475109a816c2a31a8b424750911343f0bce304827a5255df167547e/mashumaro-3.20.tar.gz", hash = "sha256:af4573f14ae61be3fbc3a473158ddfc1420f345410385809fd782e0d79e9215c", size = 191643, upload-time = "2026-02-09T21:53:55.24Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/96/5a/4fed77781061647d3be98e2f235ef1869289dd839ca0451a8d50a30fcd5c/mashumaro-3.20-py3-none-any.whl", hash = "sha256:648bc326f64c55447988eab67d6bfe3b7958c0961c83590709b1f950f88f4a3c", size = 94942, upload-time = "2026-02-09T21:53:53.343Z" },
-]
-
-[[package]]
-name = "mdurl"
-version = "0.1.2"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/d6/54/cfe61301667036ec958cb99bd3efefba235e65cdeb9c84d24a8293ba1d90/mdurl-0.1.2.tar.gz", hash = "sha256:bb413d29f5eea38f31dd4754dd7377d4465116fb207585f97bf925588687c1ba", size = 8729, upload-time = "2022-08-14T12:40:10.846Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/b3/38/89ba8ad64ae25be8de66a6d463314cf1eb366222074cfda9ee839c56a4b4/mdurl-0.1.2-py3-none-any.whl", hash = "sha256:84008a41e51615a49fc9966191ff91509e3c40b939176e643fd50a5c2196b8f8", size = 9979, upload-time = "2022-08-14T12:40:09.779Z" },
 ]
 
 [[package]]
@@ -2100,19 +2058,6 @@ wheels = [
 ]
 
 [[package]]
-name = "rich"
-version = "14.3.3"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "markdown-it-py" },
-    { name = "pygments" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/b3/c6/f3b320c27991c46f43ee9d856302c70dc2d0fb2dba4842ff739d5f46b393/rich-14.3.3.tar.gz", hash = "sha256:b8daa0b9e4eef54dd8cf7c86c03713f53241884e814f4e2f5fb342fe520f639b", size = 230582, upload-time = "2026-02-19T17:23:12.474Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/14/25/b208c5683343959b670dc001595f2f3737e051da617f66c31f7c4fa93abc/rich-14.3.3-py3-none-any.whl", hash = "sha256:793431c1f8619afa7d3b52b2cdec859562b950ea0d4b6b505397612db8d5362d", size = 310458, upload-time = "2026-02-19T17:23:13.732Z" },
-]
-
-[[package]]
 name = "ruff"
 version = "0.15.9"
 source = { registry = "https://pypi.org/simple" }
@@ -2184,37 +2129,12 @@ wheels = [
 ]
 
 [[package]]
-name = "shellingham"
-version = "1.5.4"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/58/15/8b3609fd3830ef7b27b655beb4b4e9c62313a4e8da8c676e142cc210d58e/shellingham-1.5.4.tar.gz", hash = "sha256:8dbca0739d487e5bd35ab3ca4b36e11c4078f3a234bfce294b0a0291363404de", size = 10310, upload-time = "2023-10-24T04:13:40.426Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e0/f9/0595336914c5619e5f28a1fb793285925a8cd4b432c9da0a987836c7f822/shellingham-1.5.4-py2.py3-none-any.whl", hash = "sha256:7ecfff8f2fd72616f7481040475a65b2bf8af90a56c89140852d1120324e8686", size = 9755, upload-time = "2023-10-24T04:13:38.866Z" },
-]
-
-[[package]]
-name = "signalrgb"
-version = "1.0.2"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "httpx" },
-    { name = "mashumaro" },
-    { name = "rich" },
-    { name = "typer" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/a7/95/0bbbf7e851823d1381bf5738aea78b3c79544557624bdb4a687fd436002b/signalrgb-1.0.2.tar.gz", hash = "sha256:c6400978c89a189e161258ff4c194a586ed78e6dcbc46768b25f846202345a3d", size = 39222, upload-time = "2026-04-05T08:49:58.021Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/e1/74/fa818cbf37466a654204185b7b1d289793762e4e26aec4288da8db54c134/signalrgb-1.0.2-py3-none-any.whl", hash = "sha256:bb749aa7771f27e7eb1734aaf09558657ae882bcba362fa8c1705ba1ddb4abf1", size = 25440, upload-time = "2026-04-05T08:49:56.156Z" },
-]
-
-[[package]]
 name = "signalrgb-homeassistant"
-version = "1.1.0"
+version = "2.1.2"
 source = { editable = "." }
 dependencies = [
     { name = "colorama" },
     { name = "homeassistant" },
-    { name = "signalrgb" },
 ]
 
 [package.dev-dependencies]
@@ -2235,7 +2155,6 @@ dev = [
 requires-dist = [
     { name = "colorama", specifier = ">=0.4.6" },
     { name = "homeassistant", specifier = ">=2026.4.0" },
-    { name = "signalrgb", specifier = ">=1.0.2" },
 ]
 
 [package.metadata.requires-dev]
@@ -2372,21 +2291,6 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/2c/e4/e3c6f71c95a2cbabd7d88fd698b00b8af48e39aa10e0b10b839410fc3c6d/ty-0.0.28-py3-none-win32.whl", hash = "sha256:88e2c784ec5e0e2fb01b137d92fd595cdc27b98a553f4bb34b8bf138bac1be1e", size = 9985411, upload-time = "2026-04-02T21:34:44.763Z" },
     { url = "https://files.pythonhosted.org/packages/8c/e5/79dbab4856d3d15e5173314ff1846be65d58b31de6efe62ef1c25c663b32/ty-0.0.28-py3-none-win_amd64.whl", hash = "sha256:faaffbef127cb67560ad6dbc6a8f8845a4033b818bcc78ad7af923e02df199db", size = 10986548, upload-time = "2026-04-02T21:34:59.886Z" },
     { url = "https://files.pythonhosted.org/packages/01/b2/cc987aaf5babacc55caf0aeb751c83401e86e05e22ce82dace5a7e7e5354/ty-0.0.28-py3-none-win_arm64.whl", hash = "sha256:34a18ea09ee09612fb6555deccf1eed810e6f770b61a41243b494bcb7f624a1c", size = 10388573, upload-time = "2026-04-02T21:34:29.219Z" },
-]
-
-[[package]]
-name = "typer"
-version = "0.24.1"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "annotated-doc" },
-    { name = "click" },
-    { name = "rich" },
-    { name = "shellingham" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/f5/24/cb09efec5cc954f7f9b930bf8279447d24618bb6758d4f6adf2574c41780/typer-0.24.1.tar.gz", hash = "sha256:e39b4732d65fbdcde189ae76cf7cd48aeae72919dea1fdfc16593be016256b45", size = 118613, upload-time = "2026-02-21T16:54:40.609Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/4a/91/48db081e7a63bb37284f9fbcefda7c44c277b18b0e13fbc36ea2335b71e6/typer-0.24.1-py3-none-any.whl", hash = "sha256:112c1f0ce578bfb4cab9ffdabc68f031416ebcc216536611ba21f04e9aa84c9e", size = 56085, upload-time = "2026-02-21T16:54:41.616Z" },
 ]
 
 [[package]]

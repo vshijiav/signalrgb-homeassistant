@@ -6,7 +6,8 @@
         "data": {
           "host": "[%key:common::config_flow::data::host%]",
           "port": "[%key:common::config_flow::data::port%]"
-        }
+        },
+        "description": "Host and port of the WebPipe relay (webpipe_relay.py) running on the SignalRGB PC. SignalRGB itself only listens on localhost:16036."
       }
     },
     "error": {
