@@ -246,14 +246,18 @@ class WebPipe:
     def _handle_message(self, data: dict[str, Any]) -> None:
         kind = data.get("type")
         if kind == MSG_RESPONSE:
-            future = self._pending.get(data.get("id"))
+            call_id = data.get("id")
+            future = self._pending.get(call_id) if isinstance(call_id, int) else None
             if future is not None and not future.done():
                 future.set_result(self.unwrap(data.get("data")))
         elif kind == MSG_PROPERTY_UPDATE:
             self._apply_updates(data.get("data", []))
         elif kind == MSG_SIGNAL:
+            object_id, signal = data.get("object"), data.get("signal")
+            if not isinstance(object_id, str) or not isinstance(signal, int):
+                return
             args = self.unwrap(data.get("args", []))
-            for handler in self._signal_handlers.get((data.get("object"), data.get("signal")), []):
+            for handler in self._signal_handlers.get((object_id, signal), []):
                 handler(args)
 
     def _apply_updates(self, updates: list[dict[str, Any]]) -> None:
