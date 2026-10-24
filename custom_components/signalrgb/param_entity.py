@@ -8,6 +8,7 @@ that parameter runs, and is unavailable while the running effect lacks it.
 from __future__ import annotations
 
 from collections.abc import Callable
+import re
 from typing import Any
 
 from homeassistant.core import HomeAssistant, callback
@@ -27,17 +28,22 @@ KIND_TEXT = "text"
 UNIQUE_ID_PREFIX = "param_"
 NAME_PREFIX = "Effect "
 
+COLOR_PATTERN = r"^#[0-9a-fA-F]{6}$"
+COLOR_RE = re.compile(COLOR_PATTERN)
+
 
 def param_kind(param: QObjectProxy) -> str | None:
-    """Map a parameter's SignalRGB editor to the entity kind that controls it."""
+    """Map a parameter to the entity kind that controls it.
+
+    The value decides before the editor name: hue parameters use
+    PropColorslider.qml but hold a 0-360 number, not a color.
+    """
     editor = param.get("editor") or ""
     value = param.get("value")
     if "Combo" in editor:
         return KIND_SELECT
     if "Boolean" in editor or isinstance(value, bool):
         return KIND_SWITCH
-    if "Color" in editor:
-        return KIND_TEXT
     if (
         isinstance(value, (int, float))
         and param.get("min") is not None
@@ -47,6 +53,16 @@ def param_kind(param: QObjectProxy) -> str | None:
     if isinstance(value, str):
         return KIND_TEXT
     return None
+
+
+def is_color_param(param: QObjectProxy | None) -> bool:
+    """True when the parameter currently holds a #rrggbb color.
+
+    Decided by the value, so a pattern is only enforced on values that satisfy
+    it; Home Assistant refuses to write a state that breaks the pattern.
+    """
+    value = param.get("value") if param is not None else None
+    return isinstance(value, str) and COLOR_RE.fullmatch(value) is not None
 
 
 class SignalRGBParamEntity(SignalRGBEntity):

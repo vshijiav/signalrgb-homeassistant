@@ -8,10 +8,14 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import SignalRGBConfigEntry
-from .param_entity import KIND_TEXT, SignalRGBParamEntity, async_setup_param_entities
+from .param_entity import (
+    COLOR_PATTERN,
+    KIND_TEXT,
+    SignalRGBParamEntity,
+    async_setup_param_entities,
+    is_color_param,
+)
 from .webpipe import WebPipeError
-
-COLOR_PATTERN = r"^#[0-9a-fA-F]{6}$"
 
 
 async def async_setup_entry(
@@ -30,8 +34,7 @@ class SignalRGBParamText(SignalRGBParamEntity, TextEntity):
 
     @property
     def _is_color(self) -> bool:
-        param = self.param
-        return param is not None and "Color" in (param.get("editor") or "")
+        return is_color_param(self.param)
 
     @property
     def pattern(self) -> str | None:

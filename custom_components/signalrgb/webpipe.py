@@ -17,6 +17,8 @@ from typing import Any
 
 import aiohttp
 
+from .const import LOGGER
+
 # QWebChannel message types
 MSG_SIGNAL = 1
 MSG_PROPERTY_UPDATE = 2
@@ -224,20 +226,13 @@ class WebPipe:
                 if msg.type != aiohttp.WSMsgType.TEXT:
                     break
                 data = json.loads(msg.data)
-                kind = data.get("type")
-                if kind == MSG_RESPONSE:
-                    future = self._pending.get(data.get("id"))
-                    if future is not None and not future.done():
-                        future.set_result(self.unwrap(data.get("data")))
-                elif kind == MSG_PROPERTY_UPDATE:
-                    self._apply_updates(data.get("data", []))
+                try:
+                    self._handle_message(data)
+                except Exception:  # noqa: BLE001 - one bad message must not drop the channel
+                    LOGGER.exception("Error handling WebPipe message type %s", data.get("type"))
+                if data.get("type") == MSG_PROPERTY_UPDATE:
+                    # The server sends the next batch of updates only after Idle
                     await self.send({"type": MSG_IDLE})
-                elif kind == MSG_SIGNAL:
-                    args = self.unwrap(data.get("args", []))
-                    for handler in self._signal_handlers.get(
-                        (data.get("object"), data.get("signal")), []
-                    ):
-                        handler(args)
         except aiohttp.ClientError, ConnectionError, WebPipeError:
             pass
         finally:
@@ -247,6 +242,19 @@ class WebPipe:
             if self._ws is not None and not self._ws.closed:
                 await self._ws.close()
             self._on_disconnect()
+
+    def _handle_message(self, data: dict[str, Any]) -> None:
+        kind = data.get("type")
+        if kind == MSG_RESPONSE:
+            future = self._pending.get(data.get("id"))
+            if future is not None and not future.done():
+                future.set_result(self.unwrap(data.get("data")))
+        elif kind == MSG_PROPERTY_UPDATE:
+            self._apply_updates(data.get("data", []))
+        elif kind == MSG_SIGNAL:
+            args = self.unwrap(data.get("args", []))
+            for handler in self._signal_handlers.get((data.get("object"), data.get("signal")), []):
+                handler(args)
 
     def _apply_updates(self, updates: list[dict[str, Any]]) -> None:
         changed: set[str] = set()

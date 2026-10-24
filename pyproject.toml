@@ -1,6 +1,6 @@
 [project]
 name = "signalrgb-homeassistant"
-version = "2.1.2"
+version = "2.1.3"
 description = "Home Assistant integration for SignalRGB over its local WebPipe channel (no Pro needed)"
 authors = [{ name = "Stefanie Jane", email = "stef@hyperbliss.tech" }]
 license = { text = "Apache-2.0" }

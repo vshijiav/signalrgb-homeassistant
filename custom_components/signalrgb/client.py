@@ -79,7 +79,11 @@ class SignalRGBClient:
 
     def _notify(self) -> None:
         for listener in list(self._listeners):
-            listener()
+            # A failing entity must not take the channel down with it
+            try:
+                listener()
+            except Exception:  # noqa: BLE001
+                LOGGER.exception("Error updating a SignalRGB entity")
 
     def _handle_update(self, _changed: set[str]) -> None:
         active = self.active_effect
@@ -146,6 +150,9 @@ class SignalRGBClient:
             except WebPipeError as err:
                 attempt += 1
                 LOGGER.debug("Reconnect to %s failed: %s", self.url, err)
+            except Exception:  # noqa: BLE001 - keep retrying whatever went wrong
+                attempt += 1
+                LOGGER.exception("Unexpected error reconnecting to %s", self.url)
 
     def _obj(self, name: str) -> QObjectProxy:
         if self._pipe is None or not self._pipe.connected:

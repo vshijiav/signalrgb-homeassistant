@@ -14,6 +14,7 @@ from custom_components.signalrgb.param_entity import (
     KIND_SELECT,
     KIND_SWITCH,
     KIND_TEXT,
+    is_color_param,
     param_kind,
 )
 from custom_components.signalrgb.webpipe import WebPipeError
@@ -162,16 +163,42 @@ async def test_auto_advance(fake_signalrgb, client):
     assert ("{timer}", "SetInterval(int)", [60000]) in fake.calls
 
 
+class Param:
+    """Stand-in for a parameter object."""
+
+    def __init__(self, props):
+        self.props = props
+
+    def get(self, name, default=None):
+        return self.props.get(name, default)
+
+
 async def test_param_kind(fake_signalrgb):
     """SignalRGB editors map to the entity kind that controls them."""
     fake, _server = fake_signalrgb
-
-    class Param:
-        def __init__(self, props):
-            self.props = props
-
-        def get(self, name, default=None):
-            return self.props.get(name, default)
-
     kinds = [param_kind(Param(param.props)) for param in fake.params]
     assert kinds == [KIND_NUMBER, KIND_TEXT, KIND_SWITCH, KIND_SELECT]
+
+
+def test_hue_param_is_a_number():
+    """Hue parameters use a "Color" editor but hold a number, not a #rrggbb color."""
+    hue = Param(
+        {"name": "hueBase", "editor": "PropColorslider.qml", "value": 0, "min": 0, "max": 360}
+    )
+    assert param_kind(hue) == KIND_NUMBER
+    assert not is_color_param(hue)
+    assert is_color_param(Param({"editor": "PropColorpicker.qml", "value": "#00ff7f"}))
+    assert not is_color_param(Param({"editor": "PropColorpicker.qml", "value": "#fff"}))
+
+
+async def test_failing_listener_keeps_connection(fake_signalrgb, client):
+    """An entity that raises while updating must not drop the channel."""
+
+    def broken_listener():
+        raise ValueError("entity rejected its state")
+
+    client.add_listener(broken_listener)
+    await client.apply_effect("Rainbow")
+    await wait_for(lambda: client.current_effect == "Rainbow")
+    await asyncio.sleep(0.1)
+    assert client.connected
