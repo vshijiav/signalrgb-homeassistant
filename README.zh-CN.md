@@ -50,13 +50,20 @@ python webpipe_relay.py --allow 192.168.1.10
 - 日志写到脚本旁边的 `webpipe_relay.log`。
 - 如果 Windows 弹窗询问，或者 Home Assistant 连不上，记得在 Windows 防火墙里放行这个端口的入站 TCP。
 
-想在每次登录后自动在后台启动，可以注册一个计划任务（在 PowerShell 里运行一次；路径和 IP 改成你的）：
+想在每次登录后自动在后台启动，可以注册一个计划任务（在 PowerShell 里运行一次；脚本路径和 IP 改成你的）：
 
 ```powershell
-$py = (Get-Command pythonw).Source
-$action = New-ScheduledTaskAction -Execute $py -Argument '"C:\path\to\webpipe_relay.py" --allow 192.168.1.10'
-Register-ScheduledTask -TaskName 'SignalRGB WebPipe relay' -Action $action -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME)
+$py = (Get-Command python).Source
+$script = 'C:\path\to\webpipe_relay.py'
+$action = New-ScheduledTaskAction -Execute "$env:SystemRoot\System32\conhost.exe" -Argument "--headless `"$py`" -I `"$script`" --allow 192.168.1.10" -WorkingDirectory (Split-Path $script)
+$settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+Register-ScheduledTask -TaskName 'SignalRGB WebPipe relay' -Action $action -Settings $settings -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME)
+Start-ScheduledTask -TaskName 'SignalRGB WebPipe relay'
 ```
+
+- `conhost --headless` 让 `python.exe` 在后台运行，不弹控制台窗口。程序仍然是 `python.exe`，所以你之前给 Python 放行的防火墙规则依然有效（`pythonw.exe` 在防火墙眼里是另一个程序）。
+- `-ExecutionTimeLimit 0` 很重要：Windows 默认会在计划任务运行 72 小时后把它停掉。
+- 中继出错退出时，任务会在 1 分钟后自动重启它。
 
 最好在路由器里给这台 PC 固定 IP（DHCP 保留），这样 Home Assistant 总能找到它。
 

@@ -25,7 +25,7 @@ async def pipe(reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> No
         while data := await reader.read(65536):
             writer.write(data)
             await writer.drain()
-    except ConnectionError, asyncio.CancelledError:
+    except (ConnectionError, asyncio.CancelledError):
         pass
     finally:
         writer.close()

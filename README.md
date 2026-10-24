@@ -67,13 +67,22 @@ python webpipe_relay.py --allow 192.168.1.10
   can't connect.
 
 To start it in the background at every logon, register a scheduled task (run once, in
-PowerShell; adjust the paths and IP):
+PowerShell; adjust the script path and IP):
 
 ```powershell
-$py = (Get-Command pythonw).Source
-$action = New-ScheduledTaskAction -Execute $py -Argument '"C:\path\to\webpipe_relay.py" --allow 192.168.1.10'
-Register-ScheduledTask -TaskName 'SignalRGB WebPipe relay' -Action $action -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME)
+$py = (Get-Command python).Source
+$script = 'C:\path\to\webpipe_relay.py'
+$action = New-ScheduledTaskAction -Execute "$env:SystemRoot\System32\conhost.exe" -Argument "--headless `"$py`" -I `"$script`" --allow 192.168.1.10" -WorkingDirectory (Split-Path $script)
+$settings = New-ScheduledTaskSettingsSet -ExecutionTimeLimit ([TimeSpan]::Zero) -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -StartWhenAvailable -MultipleInstances IgnoreNew
+Register-ScheduledTask -TaskName 'SignalRGB WebPipe relay' -Action $action -Settings $settings -Trigger (New-ScheduledTaskTrigger -AtLogOn -User $env:USERNAME)
+Start-ScheduledTask -TaskName 'SignalRGB WebPipe relay'
 ```
+
+- `conhost --headless` runs `python.exe` without a console window. It keeps the program
+  `python.exe`, so a firewall rule you already allowed for Python applies (`pythonw.exe` is a
+  different program to Windows Firewall).
+- `-ExecutionTimeLimit 0` matters: by default Windows stops scheduled tasks after 72 hours.
+- If the relay exits with an error, the task restarts it after a minute.
 
 Give the PC a fixed IP (a DHCP reservation) so Home Assistant can always find it.
 

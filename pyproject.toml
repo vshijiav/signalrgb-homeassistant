@@ -96,6 +96,8 @@ possibly-unresolved-reference = "ignore"
 # General settings
 line-length = 100
 target-version = "py314"
+# The Windows helpers run on the PC's own Python (3.11+), not Home Assistant's
+per-file-target-version = { "windows/**/*.py" = "py311" }
 src = ["custom_components", "tests"]
 extend-exclude = [".venv", "docs"]
 
